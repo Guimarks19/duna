@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#172e2b">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="description" content="DUNA — uma pequena grande aventura. Corra, explore e descubra cinco mundos em um jogo original para navegador.">
+  <title>DUNA — Uma pequena grande aventura</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="game-ui.css">
+  <script defer src="js/config.js"></script>
+  <script defer src="js/save.js"></script>
+  <script defer src="js/audio.js"></script>
+  <script defer src="js/renderer.js"></script>
+  <script defer src="js/engine.js"></script>
+  <script defer src="js/race.js"></script>
+  <script defer src="js/ui.js"></script>
+  <script defer src="js/input.js"></script>
+  <script defer src="game.js"></script>
+</head>
+<body class="game-ui" data-screen="device">
+  <svg class="svg-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h15M13 5l7 7-7 7"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="m9 5 11 7-11 7z" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="6" y="10" width="12" height="10" rx="3"/><path d="M9 10V7a3 3 0 0 1 6 0v3M12 14v2"/></symbol>
+    <symbol id="i-sound" viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4zM17 8a6 6 0 0 1 0 8M20 5a10 10 0 0 1 0 14"/></symbol>
+    <symbol id="i-muted" viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4zM17 9l5 6M22 9l-5 6"/></symbol>
+    <symbol id="i-coin" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m12 7 3 5-3 5-3-5z" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20S2 14 2 7a5 5 0 0 1 10-1A5 5 0 0 1 22 7c0 7-10 13-10 13z" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14" stroke-width="4"/></symbol>
+    <symbol id="i-expand" viewBox="0 0 24 24"><path d="M9 4H4v5M15 4h5v5M4 15v5h5M20 15v5h-5"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="i-flag" viewBox="0 0 24 24"><path d="M5 21V3h14l-3 5 3 5H5"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3 3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></symbol>
+    <symbol id="i-retry" viewBox="0 0 24 24"><path d="M4 10a8 8 0 1 1 0 6M4 4v6h6"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7M5 9v12h5v-7h4v7h5V9"/></symbol>
+    <symbol id="i-map" viewBox="0 0 24 24"><path d="m3 5 6-2 6 3 6-2v15l-6 2-6-3-6 2zM9 3v15M15 6v15"/></symbol>
+    <symbol id="i-character" viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M4 21v-3a8 8 0 0 1 16 0v3"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><path d="M4 7h16M4 17h16"/><rect x="7" y="4" width="4" height="6" rx="1" fill="currentColor"/><rect x="14" y="14" width="4" height="6" rx="1" fill="currentColor"/></symbol>
+    <symbol id="i-jump" viewBox="0 0 24 24"><path d="M12 20V4M5 11l7-7 7 7"/></symbol>
+    <symbol id="i-duck" viewBox="0 0 24 24"><path d="M12 3v13M6 10l6 6 6-6M4 21h16"/></symbol>
+    <symbol id="i-trophy" viewBox="0 0 24 24"><path d="M7 3h10v7a5 5 0 0 1-10 0zM7 5H3v3a4 4 0 0 0 4 4M17 5h4v3a4 4 0 0 1-4 4M12 15v5M7 21h10"/></symbol>
+  </svg>
+
+  <div class="menu-backdrop" aria-hidden="true"><canvas id="menu-canvas"></canvas><div class="scene-shade"></div><div class="scene-grain"></div></div>
+  <div class="app-shell">
+    <header class="site-header">
+      <div class="game-edition"><span class="edition-mark">D</span><span>UMA PEQUENA<br><b>GRANDE AVENTURA</b></span></div>
+      <div class="header-tools"><div class="wallet" title="Suas moedas"><svg><use href="#i-coin"/></svg><span id="wallet-count">0</span></div><button class="icon-button" id="sound-toggle" data-action="mute" aria-label="Desligar áudio"><svg><use href="#i-sound"/></svg></button><button class="icon-button" data-action="fullscreen" aria-label="Tela cheia"><svg><use href="#i-expand"/></svg></button></div>
+    </header>
+
+    <main>
+      <section id="device-screen" class="screen sub-screen welcome-screen" hidden aria-label="Escolher dispositivo">
+        <div class="welcome-panel"><span class="section-kicker">DUNA · SEU PRÓXIMO HORIZONTE</span><h1>ONDE VOCÊ<br>ESTÁ JOGANDO?</h1><p>Escolha como quer controlar a aventura.</p>
+          <div class="device-choices"><button class="mode-card" data-action="device-mobile"><span class="device-symbol">↑ ↓</span><strong>CELULAR</strong><span>Controles de toque.<br>O caminho nas suas mãos.</span><b id="recommend-mobile"></b></button><button class="mode-card" data-action="device-pc"><span class="device-symbol">W ↑</span><strong>COMPUTADOR</strong><span>Teclado e multiplayer local.<br>Um desafio para dividir.</span><b id="recommend-pc"></b></button></div>
+          <p class="creator-credit">Desenvolvido por <strong>Guilherme Marques</strong></p>
+        </div>
+      </section>
+      <section id="tutorial-screen" class="screen sub-screen welcome-screen" hidden aria-label="Controles antes da partida"><div class="welcome-panel compact-panel"><button class="back-link" data-action="back">← VOLTAR</button><span class="section-kicker">ANTES DO PRIMEIRO SALTO</span><h1>CONTROLES</h1><div id="tutorial-controls" class="tutorial-controls"></div><button class="button primary" data-action="tutorial-start">COMEÇAR </button></div></section>
+      <section id="multiplayer-screen" class="screen sub-screen" hidden aria-label="Multiplayer local">
+        <button class="back-link" data-action="modes">← MODOS</button><div class="page-heading"><div><span class="section-kicker">MULTIPLAYER LOCAL · CORRIDA</span><h1>Um teclado. Dois rivais.</h1></div><p>Cidade · dificuldade crescente<br>Vence quem cruzar a linha primeiro.</p></div>
+        <div class="rival-cards"><article><span class="section-kicker">PISTA SUPERIOR</span><h2>JOGADOR 1</h2><p><kbd>W</kbd> Pular <kbd>S</kbd> Abaixar</p><div id="race-character-0" class="option-row"></div></article><article><span class="section-kicker">PISTA INFERIOR</span><h2>JOGADOR 2</h2><p><kbd>↑</kbd> Pular <kbd>↓</kbd> Abaixar</p><div id="race-character-1" class="option-row"></div></article></div>
+        <div class="race-rules"><p>Mesma velocidade e mesmos desafios para os dois. Cada impacto custa uma vida e <strong>75 m</strong>. Ao perder as 3 vidas, o resgate custa mais <strong>75 m</strong> e devolve suas vidas.</p><p>As moedas valem pontos nesta disputa. <kbd>ESC</kbd> pausa as duas pistas.</p><button class="button primary" data-action="start-race">COMEÇAR <svg><use href="#i-arrow"/></svg></button></div>
+      </section>
+      <section id="home-screen" class="screen home-screen" hidden aria-label="Menu principal">
+        <div class="hero">
+          <div class="hero-content">
+            <div class="eyebrow"><span></span> CORRA ALÉM DO HORIZONTE <span></span></div>
+            <h1>DUNA</h1><p class="logo-caption">A AVENTURA ESTÁ NO CAMINHO</p>
+            <div class="main-menu" role="group" aria-label="Opções do jogo">
+              <button class="button primary play-button" data-action="play"><svg><use href="#i-play"/></svg><span id="play-label">JOGAR</span><span class="button-key">↵</span></button>
+              <button class="button menu-button" data-action="characters"><svg><use href="#i-character"/></svg>PERSONAGENS <svg class="menu-chevron"><use href="#i-arrow"/></svg></button>
+              <button class="button menu-button" data-action="settings"><svg><use href="#i-settings"/></svg>CONFIGURAÇÕES <svg class="menu-chevron"><use href="#i-arrow"/></svg></button>
+            </div>
+            <div class="hero-note" id="journey-note">CINCO MUNDOS. UM GRANDE CAMINHO.</div><span id="journey-count" hidden></span><p class="creator-credit">Desenvolvido por <strong>Guilherme Marques</strong></p>
+          </div>
+          <div class="hero-world"><span class="world-emblem"><svg><use href="#i-flag"/></svg></span><div>O PRIMEIRO SALTO<span>Todo horizonte guarda uma aventura.</span></div></div>
+        </div>
+        <div class="home-bottom"><div class="control-guide"><span><kbd>ESPAÇO</kbd> pular</span><span><kbd>↓</kbd> deslizar</span><span><kbd>ESC</kbd> pausar</span></div><span class="save-note"><span class="save-dot"></span> Seu progresso é salvo automaticamente</span></div>
+      </section>
+
+      <section id="modes-screen" class="screen sub-screen" hidden aria-label="Modos de jogo">
+        <button class="back-link" data-action="home">← VOLTAR</button>
+        <div class="page-heading"><div><span class="section-kicker">ESCOLHA SUA AVENTURA</span><h1>Qual é o seu desafio?</h1></div></div>
+        <div class="mode-menu">
+          <button class="mode-card" data-action="stages"><svg><use href="#i-flag"/></svg><span class="section-kicker">A JORNADA</span><strong>MODO FASES</strong><span>Cinco mundos. Ritmo crescente.<br>Domine o caminho até o último salto.</span><b>EXPLORAR →</b></button>
+          <button class="mode-card" data-action="free"><svg><use href="#i-map"/></svg><span class="section-kicker">SEM LINHA DE CHEGADA</span><strong>MODO LIVRE</strong><span>Escolha o mundo, a luz e o ritmo.<br>Vá tão longe quanto conseguir.</span><b>PERSONALIZAR →</b></button>
+          <button id="multiplayer-option" class="mode-card" data-action="multiplayer"><svg><use href="#i-trophy"/></svg><span class="section-kicker">MULTIPLAYER LOCAL</span><strong>2 JOGADORES</strong><span>Duas pistas. Um teclado.<br>O primeiro na chegada vence.</span><b>DISPUTAR →</b></button>
+        </div>
+        <button id="continue-journey" class="button secondary continue-journey" data-action="continue" hidden></button>
+      </section>
+
+      <section id="free-screen" class="screen sub-screen" hidden aria-label="Configurar Modo Livre">
+        <button class="back-link" data-action="modes">← MODOS</button>
+        <div class="page-heading"><div><span class="section-kicker">SEM LIMITES</span><h1>O caminho é seu.</h1></div><p>3 vidas. Sem checkpoints.<br>A corrida só termina quando as vidas acabam.</p></div>
+        <div class="free-layout"><div id="free-controls" class="free-controls"></div><div class="free-preview"><canvas id="free-preview" aria-label="Prévia do mapa e período escolhidos"></canvas><div class="free-preview-info"><span id="free-caption" class="section-kicker"></span><strong id="free-record"></strong><p>O ritmo cresce ao longo da corrida.<br>Escolha sua intensidade e supere seu recorde.</p><button class="button primary" data-action="start-free"><svg><use href="#i-play"/></svg>COMEÇAR CORRIDA</button></div></div></div>
+      </section>
+
+      <section id="stages-screen" class="screen sub-screen" hidden aria-label="Seleção de fases"><button class="back-link" data-action="modes">← MODOS</button><div class="page-heading"><div><span class="section-kicker">SELEÇÃO DE FASES</span><h1>Escolha seu destino</h1></div><p>Um mundo de cada vez.<br>O próximo horizonte é a sua conquista.</p></div><div class="world-map"><div id="stage-worlds" class="world-grid large"></div></div><div class="journey-footnote"><svg><use href="#i-flag"/></svg> Checkpoints: 3 no Deserto · 2 na Floresta · 1 na Cidade · Neve e Vulcão sem checkpoints.</div></section>
+
+      <section id="characters-screen" class="screen sub-screen" hidden aria-label="Personagens"><button class="back-link" data-action="home">← VOLTAR</button><div class="page-heading"><div><span class="section-kicker">SUA EQUIPE</span><h1>Quem vai nessa?</h1></div><p>Mesma coragem. Um estilo só seu.<br>Desbloqueie aventureiros com suas moedas.</p></div><div id="character-grid" class="character-grid"></div><div class="cosmetic-header"><h2>Equipar estilo</h2><p>Skins e rastros para todos os personagens.</p></div><div id="cosmetic-grid" class="cosmetic-grid"></div></section>
+
+      <section id="settings-screen" class="screen sub-screen" hidden aria-label="Configurações"><button class="back-link" data-action="back">← VOLTAR</button><div class="page-heading"><div><span class="section-kicker">CONFIGURAÇÕES</span><h1>No seu ritmo</h1></div></div><div class="settings-layout"><div class="settings-panel"><h2>Som & experiência</h2><label class="setting-row"><span><strong>Música ambiente</strong><small>Uma trilha leve para acompanhar o caminho.</small></span><input id="music-setting" type="checkbox" role="switch"></label><label class="setting-row"><span><strong>Efeitos sonoros</strong><small>Saltos, moedas e pequenas conquistas.</small></span><input id="sfx-setting" type="checkbox" role="switch"></label><label class="setting-row"><span><strong>Reduzir movimento</strong><small>Menos partículas e animação no menu.</small></span><input id="motion-setting" type="checkbox" role="switch"></label><div class="setting-row"><span><strong>Tela cheia</strong><small>Mais espaço para explorar.</small></span><button class="button small secondary" data-action="fullscreen">Expandir <svg><use href="#i-expand"/></svg></button></div><p class="settings-saved">✓ Preferências salvas automaticamente.</p></div><div class="controls-panel"><span class="section-kicker">CONTROLES</span><h2>É só dar o primeiro salto.</h2><div><kbd>ESPAÇO</kbd><span>ou</span><kbd>↑</kbd><strong>Pular</strong></div><div><kbd>↓</kbd><strong>Abaixar / deslizar</strong></div><div><kbd>ESC</kbd><strong>Pausar / continuar</strong></div><div class="touch-help"><svg><use href="#i-jump"/></svg><svg><use href="#i-duck"/></svg><strong>No celular, use os botões de toque.</strong></div><p>3 vidas por fase. 2 segundos de proteção após um impacto. No gelo, o deslize dura um pouquinho mais.</p><p class="keyboard-help">Nos menus: setas para navegar · Enter para escolher · Esc para voltar.</p></div></div></section>
+
+      <section id="game-screen" class="screen game-screen" hidden aria-label="Jogo">
+        <div class="game-frame" id="game-frame">
+          <canvas id="game-canvas" width="1920" height="1080" tabindex="0" aria-label="Área do jogo. Espaço ou seta para cima para pular, seta para baixo para deslizar e Escape para pausar."></canvas>
+          <div id="race-hud" class="race-hud" hidden><div class="lane-hud" id="lane-hud-0"></div><div class="lane-divider"><span>CORRIDA LOCAL</span><span>ESC · PAUSAR</span></div><div class="lane-hud" id="lane-hud-1"></div><div id="race-countdown" class="race-countdown" aria-live="polite"></div></div>
+          <div class="game-hud"><div class="hud-world"><span id="hud-stage">DESERTO</span><strong id="hud-score">000000</strong><small>PONTOS</small></div><div class="hud-stats"><span class="hud-coins"><svg><use href="#i-coin"/></svg><b id="hud-coins">0</b></span><div id="hud-lives" class="hud-lives" aria-label="3 vidas"></div><button class="icon-button" data-action="fullscreen" aria-label="Tela cheia"><svg><use href="#i-expand"/></svg></button><button class="icon-button" data-action="pause" aria-label="Pausar"><svg><use href="#i-pause"/></svg></button></div></div>
+          <div class="progress-hud"><div><span id="hud-distance">0 m</span><span id="hud-percent">0%</span><span id="hud-time">0:00 / 2:10</span></div><div class="progress-track" role="progressbar" aria-label="Progresso da fase" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="hud-progress"></div></div></div>
+          <div id="game-hint" class="game-hint" aria-live="polite"></div>
+          <div class="portrait-hint">↻ Na horizontal, você vê mais do caminho.</div>
+          <div class="touch-controls" aria-label="Controles de toque"><button id="touch-duck" class="touch-button" aria-label="Abaixar: segure" data-touch="duck"><svg><use href="#i-duck"/></svg><span>DESLIZAR</span></button><button id="touch-jump" class="touch-button jump-touch" aria-label="Pular" data-touch="jump"><svg><use href="#i-jump"/></svg><span>PULAR</span></button></div>
+          <div id="game-overlay" class="game-overlay" hidden></div>
+          <div class="game-bottom"><div class="control-guide"><span><kbd>ESPAÇO</kbd> / <kbd>↑</kbd> pular</span><span><kbd>↓</kbd> deslizar</span></div></div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <div id="toast" role="status" class="toast" hidden></div>
+  <noscript>Ative o JavaScript para jogar DUNA.</noscript>
+</body>
+</html>
